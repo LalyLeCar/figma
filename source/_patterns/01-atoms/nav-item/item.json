@@ -1,0 +1,8 @@
+{
+    "tag":"p",
+    "tag_2": "div",
+    "link": "http://www.google.com",
+    "button-class": "main-nav",
+    "text": "this is nav",
+    "div-class": "main-div"
+}

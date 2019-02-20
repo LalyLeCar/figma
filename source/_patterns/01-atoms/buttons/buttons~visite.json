@@ -1,0 +1,10 @@
+
+{
+    "tag":"a",
+    "link": "http://www.google.com",
+    "button-class": "visit-button",
+    "tag_2": "img",
+    "link-img": "../../images/icon/arrowyellow.png",
+    "img-class": "image-arrow",
+    "text": "En savoir plus"
+}

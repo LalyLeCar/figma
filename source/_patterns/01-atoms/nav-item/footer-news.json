@@ -1,0 +1,8 @@
+{
+    "tag":"p",
+    "tag_2": "input",
+    "type-input": "text",
+    "button-class": "newstxt",
+    "text": "Newsletter",
+    "div-class": "newsinput"
+}

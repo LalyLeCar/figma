@@ -1,0 +1,10 @@
+
+{
+    "tag":"a",
+    "link": "http://www.google.com",
+    "button-class": "expo-button",
+    "tag_2": "img",
+    "link-img": "../../images/icon/arrowred.png",
+    "img-class": "image-arrow",
+    "text": "En savoir plus"
+}

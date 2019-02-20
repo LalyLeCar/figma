@@ -1,0 +1,10 @@
+
+{
+    "tag":"a",
+    "tag_2": "img",
+    "link-img": "../../images/icon/arrowblue.png",
+    "img-class": "image-arrow",
+    "link": "http://www.google.com",
+    "button-class": "shop-button",
+    "text": "En savoir plus"
+}

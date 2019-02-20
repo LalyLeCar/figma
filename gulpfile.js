@@ -6,8 +6,9 @@
 var gulp = require('gulp'),
   path = require('path'),
   browserSync = require('browser-sync').create(),
-  argv = require('minimist')(process.argv.slice(2));
-
+  sass = require('gulp-sass'),
+  argv = require('minimist')(process.argv.slice(2)),
+  sourcemaps = require('gulp-sourcemaps');
 function resolvePath(pathInput) {
   return path.resolve(pathInput).replace(/\\/g,"/");
 }
@@ -27,6 +28,13 @@ gulp.task('pl-copy:img', function(){
     .pipe(gulp.dest(resolvePath(paths().public.images)));
 });
 
+// CSS assets copy
+gulp.task('pl-copy:assets', function(){
+  return gulp.src('**/*.*',{cwd: resolvePath(paths().source.assets)})
+    .pipe(gulp.dest(resolvePath(paths().public.assets)))
+    .pipe(browserSync.stream());
+});
+
 // Favicon copy
 gulp.task('pl-copy:favicon', function(){
   return gulp.src('favicon.ico', {cwd: resolvePath(paths().source.root)} )
@@ -35,14 +43,32 @@ gulp.task('pl-copy:favicon', function(){
 
 // Fonts copy
 gulp.task('pl-copy:font', function(){
-  return gulp.src('*', {cwd: resolvePath(paths().source.fonts)})
+  return gulp.src('**/*', {cwd: resolvePath(paths().source.fonts)})
     .pipe(gulp.dest(resolvePath(paths().public.fonts)));
+});
+
+// SASS Compilation
+gulp.task('pl-sass', function(){
+  return gulp.src(path.resolve(paths().source.css, '**/*.scss'))
+    .pipe(sourcemaps.init())
+    .pipe(sass({
+      outputStyle: 'compressed',
+    }).on('error', sass.logError))
+    .pipe(sourcemaps.write('maps'))
+    .pipe(gulp.dest(path.resolve(paths().source.css)));
 });
 
 // CSS Copy
 gulp.task('pl-copy:css', function(){
   return gulp.src(resolvePath(paths().source.css) + '/*.css')
     .pipe(gulp.dest(resolvePath(paths().public.css)))
+    .pipe(browserSync.stream());
+});
+
+// Sourcemaps Copy
+gulp.task('pl-copy:sourcemaps', function(){
+  return gulp.src(resolvePath(paths().source.css) + '/maps/**/*.css.map')
+    .pipe(gulp.dest(resolvePath(paths().public.css) + '/maps'))
     .pipe(browserSync.stream());
 });
 
@@ -87,9 +113,10 @@ gulp.task('pl-assets', gulp.series(
   gulp.parallel(
     'pl-copy:js',
     'pl-copy:img',
+    'pl-copy:assets',
     'pl-copy:favicon',
     'pl-copy:font',
-    'pl-copy:css',
+    gulp.series('pl-sass', 'pl-copy:css', 'pl-copy:sourcemaps', function(done){done();}),
     'pl-copy:styleguide',
     'pl-copy:styleguide-css'
   ),
@@ -131,6 +158,18 @@ gulp.task('patternlab:installplugin', function (done) {
   done();
 });
 
+gulp.task('autoprefixer', function () {
+    var postcss      = require('gulp-postcss');
+    var sourcemaps   = require('gulp-sourcemaps');
+    var autoprefixer = require('autoprefixer');
+
+    return gulp.src('./src/*.css')
+        .pipe(sourcemaps.init())
+        .pipe(postcss([ autoprefixer() ]))
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest('./dest'));
+});
+
 /******************************************************
  * SERVER AND WATCH TASKS
 ******************************************************/
@@ -154,7 +193,8 @@ function reloadCSS() {
 }
 
 function watch() {
-  gulp.watch(resolvePath(paths().source.css) + '/**/*.css', { awaitWriteFinish: true }).on('change', gulp.series('pl-copy:css', reloadCSS));
+  gulp.watch(resolvePath(paths().source.css) + '/**/*.scss', { awaitWriteFinish: true }).on('change', gulp.series('pl-sass'));
+  gulp.watch(resolvePath(paths().source.css) + '/**/*.css', { awaitWriteFinish: true }).on('change', gulp.series('pl-copy:css', 'pl-copy:sourcemaps', reloadCSS));
   gulp.watch(resolvePath(paths().source.styleguide) + '/**/*.*', { awaitWriteFinish: true }).on('change', gulp.series('pl-copy:styleguide', 'pl-copy:styleguide-css', reloadCSS));
 
   var patternWatches = [

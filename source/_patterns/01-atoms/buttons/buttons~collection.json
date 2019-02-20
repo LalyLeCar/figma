@@ -1,0 +1,10 @@
+
+{
+    "tag":"a",
+    "link": "http://www.google.com",
+    "button-class": "collec-button",
+    "tag_2": "img",
+    "link-img": "../../images/icon/arrowgreen.png",
+    "img-class": "image-arrow",
+    "text": "En savoir plus"
+}
